@@ -4,6 +4,6 @@
   "name": "weather.value",
   "fields": [
     {"name": "temperature", "type": "int"},
-    {"name": "status", "type": "varchar"}
+    {"name": "status", "type": "string"}
   ]
 }
