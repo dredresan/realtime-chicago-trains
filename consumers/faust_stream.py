@@ -38,8 +38,8 @@ topic = app.topic("org.cta.table.stations", value_type=Station)
 out_topic = app.topic("org.cta.table.stations.transformed", partitions=1)
 # TODO: Define a Faust Table
 table = app.Table(
-   # "TODO",
-   # default=TODO,
+   "station_events",
+   default=dict,
    partitions=1,
    changelog_topic=out_topic,
 )
@@ -52,6 +52,16 @@ table = app.Table(
 # then you would set the `line` of the `TransformedStation` record to the string `"red"`
 #
 #
+@app.agent(topic)
+async def stationevent(stationevents):
+    async for se in stationevents:
+        tstation = TransformedStation(
+            station_id = se.station_id,
+            station_name = se.station_name,
+            order = se.order,
+            line = 'red' if se.station.red else 'blue' if se.station.blue else 'green'
+        )
+        await out_topic.send(key=se.station_id, value=tstation)
 
 
 if __name__ == "__main__":
