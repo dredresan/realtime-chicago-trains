@@ -37,7 +37,7 @@ class Weather(Producer):
         #
         #
         super().__init__(
-            "weather.forecast", # TODO: Come up with a better topic name
+            "org.chicago.cta.weather.v1", # TODO: Come up with a better topic name
             key_schema=Weather.key_schema,
             value_schema=Weather.value_schema,
         )
@@ -85,7 +85,7 @@ class Weather(Producer):
            # TODO: What URL should be POSTed to?
            #
            #
-           f"{Weather.rest_proxy_url}/topics/weather.forecast",
+           f"{Weather.rest_proxy_url}/topics/{self.topic_name}",
            #
            #
            # TODO: What Headers need to bet set?
@@ -96,12 +96,12 @@ class Weather(Producer):
                {
                    "key_schema": self.key_schema,
                    "value_schema": self.value_schema,
-                   "records":[
+                   "records":[{"key": {"timestamp": self.time_millis()}, "value":
                        {
                            "temperature": self.temp,
                            "status": self.status.name
                        }
-                   ]
+                              }]
                }
            ),
         )
