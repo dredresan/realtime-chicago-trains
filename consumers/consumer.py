@@ -45,11 +45,10 @@ class KafkaConsumer:
 
         # TODO: Create the Consumer, using the appropriate type.
         if is_avro is True:
-            self.broker_properties["schema.registry.url"] = "http://localhost:8081"
-            self.consumer = AvroConsumer(self.broker_properties)
+            self.consumer = AvroConsumer(config=self.broker_properties)
         else:
-            self.consumer = Consumer(self.broker_properties)
-            pass
+            self.consumer = Consumer({'bootstrap.servers': self.broker_properties.get('bootstrap.servers'),
+                                      'group.id': self.broker_properties.get('group.id')})
 
         #
         #
@@ -57,7 +56,7 @@ class KafkaConsumer:
         # how the `on_assign` callback should be invoked.
         #
         #
-        self.consumer.subscribe(self.topic_name_pattern, on_assign=self.on_assign)
+        self.consumer.subscribe([topic_name_pattern], on_assign=self.on_assign)
 
     def on_assign(self, consumer, partitions):
         """Callback for when topic assignment takes place"""
