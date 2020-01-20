@@ -35,7 +35,7 @@ app = faust.App("stations-stream", broker="kafka://localhost:9092", store="memor
 # TODO: Define the input Kafka Topic. Hint: What topic did Kafka Connect output to?
 topic = app.topic("org.cta.table.stations", value_type=Station)
 # TODO: Define the output Kafka Topic
-out_topic = app.topic("org.cta.table.stations.transformed", partitions=1)
+out_topic = app.topic("org.cta.table.stations.table.v1", partitions=1)
 # TODO: Define a Faust Table
 table = app.Table(
    "station_events",
@@ -55,13 +55,10 @@ table = app.Table(
 @app.agent(topic)
 async def stationevent(stationevents):
     async for se in stationevents:
-        tstation = TransformedStation(
-            station_id = se.station_id,
-            station_name = se.station_name,
-            order = se.order,
-            line = 'red' if se.station.red else 'blue' if se.station.blue else 'green'
-        )
-        await out_topic.send(key=se.station_id, value=tstation)
+        table["station_id"] = se.station_id
+        table["station_name"] = se.station_name
+        table["order"] = se.order
+        table["line"] = 'red' if se.red else 'blue' if se.blue else 'green'
 
 
 if __name__ == "__main__":
