@@ -65,16 +65,16 @@ class Producer:
         if self.topic_name not in self.producer.list_topics():
             client = AdminClient(self.broker_properties)
             if self.topic_name not in client.list_topics().topics:
-            futures = client.create_topics([NewTopic(topic=self.topic_name,
+                futures = client.create_topics([NewTopic(topic=self.topic_name,
                                                      num_partitions=self.num_partitions,
                                                      replication_factor=self.num_replicas)])
 
-            for topic, future in futures.items():
-                try:
-                    future.result()
-                    logger.info(f"Topic {topic} created")
-                except Exception as e:
-                    logger.fatal(f"Failed to create topic {topic}: {e}")
+                for topic, future in futures.items():
+                    try:
+                        future.result()
+                        logger.info(f"Topic {topic} created")
+                    except Exception as e:
+                        logger.fatal(f"Failed to create topic {topic}: {e}")
         else:
             logger.info(f"Topic {self.topic_name} already exists")
         
