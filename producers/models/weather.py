@@ -94,8 +94,8 @@ class Weather(Producer):
            headers={"Content-Type": "application/vnd.kafka.avro.v2+json"},
            data=json.dumps(
                {
-                   "key_schema": self.key_schema,
-                   "value_schema": self.value_schema,
+                   "key_schema": json.dumps(Weather.key_schema),
+                   "value_schema": json.dumps(Weather.value_schema),
                    "records":[{"key": {"timestamp": self.time_millis()}, "value":
                        {
                            "temperature": self.temp,
